@@ -46,23 +46,36 @@ export const authOptions = {
         // async redirect({ url, baseUrl }) {
         //     return url
         // },
-        async jwt({ token, account }) {
+        async jwt({ token, account, user }) {
             // Persist the OAuth access_token to the token right after signin
             if (account) {
-                //token.accessToken = account.access_token
+                token.accessToken = account.access_token
+                token.user = {
+                    id: user.id,
+                    username: user.username,
+                    email: user.email,
+                    role: user.role,
+                    created_at: user.created_at,
+                    updated_at: user.updated_at,
+                    staff: user.staff,
+                    student: user.student
+                }
             }
             return token
         },
         async session({ session, token, user }) {
             // Send properties to the client, like an access_token from a provider.
-            session.user = user
+            let newSession = token
+            newSession.expires = session.expires
+            
             console.log('session callback')
-            console.log(user)
-            return session
+            console.log(newSession)
+            return newSession
         }
   },
   session: {
       maxAge: 30 * 24 * 60 * 60,
+      strategy: 'jwt',
   },
 }
 
