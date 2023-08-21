@@ -31,6 +31,7 @@ function LinkItem({ children, href, path, ...props }: any) {
 
 export default function Navbar({ path }: INavbarProps) {
     const { status, data: session } = useSession()
+    
 
     const isLoggedin = (status == 'authenticated')
 
@@ -57,7 +58,7 @@ export default function Navbar({ path }: INavbarProps) {
                         <Menu>
                             <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
                                     <HStack gap={2}>
-                                        <Avatar width="30px" height="auto" name={session.username} src="https://placekitten.com/100/100" />
+                                        <Avatar width="30px" height="auto" name={session?.user.username} src="https://placekitten.com/100/100" />
                                         <Text verticalAlign="middle">Your account</Text>
                                     </HStack>
                             </MenuButton>
