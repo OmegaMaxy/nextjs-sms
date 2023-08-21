@@ -1,0 +1,110 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id             Int            @id @default(autoincrement())
+    username       String         @unique
+    email          String         @unique
+    password       String
+    login_attempts LoginAttempt[]
+    student        Student?
+    staff          Staff?
+    role           UserRole?      @default(none)
+    created_at     DateTime?      @default(now())
+    updated_at     DateTime       @default(now()) @updatedAt
+}
+
+model Student {
+    id               Int              @id @default(autoincrement())
+    firstname        String
+    lastname         String
+    user             User             @relation(fields: [user_id], references: [id])
+    user_id          Int              @unique
+    enrolledSubjects StudentSubject[]
+    created_at       DateTime?        @default(now())
+    updated_at       DateTime         @default(now()) @updatedAt
+}
+
+model Staff {
+    id            Int       @id @default(autoincrement())
+    firstname     String
+    lastname      String
+    badge_number  Int?
+    business_role String?
+    user          User      @relation(fields: [user_id], references: [id])
+    user_id       Int       @unique
+    teacher       Teacher?
+    newsPosts     NewsPost[]
+    created_at    DateTime? @default(now())
+    updated_at    DateTime  @default(now()) @updatedAt
+}
+
+model Teacher {
+    id         Int       @id @default(autoincrement())
+    staff      Staff     @relation(fields: [staffId], references: [id])
+    staffId    Int       @unique
+    subjects   Subject[]
+    created_at DateTime? @default(now())
+    updated_at DateTime  @default(now()) @updatedAt
+}
+
+model Course {
+    id          Int       @id @default(autoincrement())
+    name        String
+    description String?   @db.Text
+    subjects    Subject[]
+    created_at  DateTime? @default(now())
+    updated_at  DateTime  @default(now()) @updatedAt
+}
+
+model Subject {
+    id               Int              @id @default(autoincrement())
+    name             String
+    description      String?          @db.Text
+    enrolledStudents StudentSubject[]
+    teacher          Teacher?         @relation(fields: [teacherId], references: [id])
+    teacherId        Int?
+    course           Course?          @relation(fields: [courseId], references: [id])
+    courseId         Int?
+    created_at       DateTime?        @default(now())
+    updated_at       DateTime         @default(now()) @updatedAt
+}
+
+model StudentSubject {
+    student   Student @relation(fields: [studentId], references: [id])
+    studentId Int
+    subject   Subject @relation(fields: [subjectId], references: [id])
+    subjectId Int
+
+    @@id([studentId, subjectId])
+}
+
+model LoginAttempt {
+    id         Int      @id @default(autoincrement())
+    user       User     @relation(fields: [userId], references: [id])
+    userId     Int
+    created_at DateTime @default(now())
+}
+model NewsPost {
+    id         Int          @id @default(autoincrement())
+    title      String
+    content    String       @db.MediumText
+    staff      Staff        @relation(fields: [staffId], references: [id])
+    staffId    Int
+    created_at  DateTime?   @default(now())
+    updated_at  DateTime    @default(now()) @updatedAt
+}
+
+enum UserRole {
+    none
+    admin
+}
