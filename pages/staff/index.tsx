@@ -17,3 +17,9 @@ export default function StaffPage() {
         </Layout>
     )
 }
+
+StaffPage.auth = {
+    role: 'admin',
+    //loading: 'admin',
+    unauthorized: '/not-authorized',
+}
