@@ -29,26 +29,35 @@ function Subject({ children, ...props }: any) {
         </Box>
     )
 }
-function HomeSubjects({ user, loggedIn, children, ...props}: any) {
+function HomeSubjects(props: any) {
 
-    const [enrolledSubjects, setSubjects] = useState(null)
-    
-    if (loggedIn) {
-        useEffect(() => {
+    const [enrolledSubjects, setSubjects] = useState([])
+    const [isLoggedIn, setLoggedIn] = useState(false)
 
-            async function getData() {
-                const res = await fetch(`http://localhost:3000/api/students/${user.student.id}/subjects`)
-                const data = await res.json()
-                setSubjects(data.enrolledSubjects)
-            }
+    const session = useSession()
+
+    async function getData() {
+        const res = await fetch(`http://localhost:3000/api/students/${session?.data?.user.student.id}/subjects`)
+        const data = await res.json()
+        setSubjects(data.enrolledSubjects)
+    }
+
+    useEffect(() => {
+        if (session.status == 'authenticated') {
             getData()
-        }, [])
+            setLoggedIn(true)
+        } else {
+            setLoggedIn(false)
+        }
+    }, [session])
+
+    if (isLoggedIn) {
 
         return (
             <Fade in={true} delay={0.3}>
                 <Box>
                     <Heading as="h2" size="md" mt="1rem">Your subjects</Heading>
-                    {enrolledSubjects ?
+                    {enrolledSubjects.length != 0 ?
                         (
                             <Flex gap={8} mt="2rem" flexWrap="wrap">
                                 {enrolledSubjects.map((subject: any) => (
@@ -76,6 +85,7 @@ function HomeSubjects({ user, loggedIn, children, ...props}: any) {
             </Fade>
         )
     }
+
     return (
         <Fade in={true} delay={0.3}>
             <Box>
@@ -93,16 +103,10 @@ function HomeSubjects({ user, loggedIn, children, ...props}: any) {
 }
 export default function Homepage() {
     
-    const {status, data } = useSession()
-    const user = data?.user
-    console.log("data on homepage")
-    console.log(data)
-    const loggedIn = (status == 'authenticated')
-
     return (
         <Layout>
             <Heading>Homepage</Heading>
-            <HomeSubjects loggedIn={loggedIn} user={user}/>
+            <HomeSubjects/>
         </Layout>
     )
 }
