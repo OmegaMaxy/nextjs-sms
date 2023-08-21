@@ -63,10 +63,11 @@ export default function Navbar({ path }: INavbarProps) {
                                     </HStack>
                             </MenuButton>
                             <MenuList>
-                                <MenuItem minH='48px'>
-                                    <LinkItem href="/courses" path={path}>
-                                        <Text>Courses</Text>
-                                    </LinkItem>
+                                <MenuItem minH='48px' as="a" href="/courses">
+                                    <Text>Courses</Text>
+                                </MenuItem>
+                                <MenuItem minH='48px' as="a" href="/account">
+                                    <Text>Account settings</Text>
                                 </MenuItem>
                                 <MenuItem minH='40px'>
                                     <Button as={Box} colorScheme="red" onClick={() => signOut()}>Log out</Button>
